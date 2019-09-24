@@ -1,6 +1,13 @@
 language: java
 jdk: openjdk13
 
+matrix:
+  include:
+  - name: "OSX testing"
+    os: osx
+  - name: "Linux testing"
+    os: linux
+
 script:
   - cd lab1
   - mvn package
