@@ -1,0 +1,6 @@
+language: java
+jdk: openjdk13
+
+script:
+  - cd lab1
+  - mvn package
