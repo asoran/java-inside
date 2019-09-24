@@ -1,5 +1,5 @@
 # java-inside
-![build](https://travis-ci.org/asoran/java-inside.svg?branch=master)
+[![Build Status](https://travis-ci.org/asoran/java-inside.svg?branch=master)](https://travis-ci.org/asoran/java-inside)
 
 Java inside - ESIPE
 
