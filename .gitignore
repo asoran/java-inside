@@ -25,5 +25,13 @@ hs_err_pid*
 # Because my stupid mac creats .DS_Store files
 .DS_Store
 
+# Eclipse
+.classpath
+.project
+.settings/
+
 # Maven target
 target/
+
+# VS Code conf
+.vscode/
