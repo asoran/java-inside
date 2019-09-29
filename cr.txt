@@ -1,0 +1,96 @@
+Altan SORAN
+Compte rendu des questions
+https://github.com/asoran/java-inside
+
+TD1: Bootcamp
+
+Exercice 1 - Git / Github
+
+3)
+Non le README sur github n'est pas à jour car on à juste commit sur notre repo local.
+Il faut faire un git push.
+
+4)
+touch test.txt
+git add test.txt
+git commit -m "add test file"
+git push
+clear && git status
+
+5)
+On doit pull (récuperer les commits) le repo, et avant, faire un fetch
+pour savoir qu'il y a eu des changements:
+git fetch && git pull
+
+6)
+rm test.txt
+git add test.txt
+git commit -m "remove test file"
+git push
+
+7)
+J'ai télécharger le plugin github sur le marketplace de Eclipse.
+Ensuite j'ai accès à des boutons et des vues du projets via la vue "git".
+Les étapes à suivres sont les mêmes que 4),5) et 6), sauf que au lieu
+d'éxecuter des commandes, j'appuie sur des bouttons qui font la même
+chose.
+
+8)
+Voir git.png
+
+Exercice 2 - Maven et JUnit 5
+
+2,3)
+Selon la doc, on doit ajouter 2 dependecy à notre projet (pom.xml)
+`junit-jupiter-api` et `junit-jupiter-engine`
+
+4)
+Pour utiliser une preview feature, on doit le dire éxplicitement a Java.
+- En ligne de commande on ajoute le flag --enable-preview.
+- Dans eclipse, on coche la case 'enable preview' dans les préferences
+de compilation.
+- Pour maven, il faut ajouter des lignes au pom.xml
+    - Il faut lui indiquer d'utiliser --enable-preview à la compilation
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <version>3.8.0</version>
+  <configuration>
+    <release>13</release>
+    <compilerArgs>--enable-preview</compilerArgs>
+  </configuration>
+</plugin>
+
+    - Il faut aussi dire au framework de test de lancer les test avec !
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.0.0-M3</version>
+    <configuration>
+        <argLine>--enable-preview</argLine>
+    </configuration>
+</plugin>
+
+Voila.
+
+Exercice 3 - Travis
+
+1,2,3) Fait
+4)
+J'ai trouvé 2 façons:
+```
+matrix:
+  include:
+  - name: "OSX testing"
+    os: osx
+  - name: "Linux testing"
+    os: linux
+```
+, et une version "sucre syntaxique":
+```
+os:
+  - linux
+  - osx
+```
+
+--------- Fin
