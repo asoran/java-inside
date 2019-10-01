@@ -15,12 +15,12 @@ public class Alien {
 		this.age = age;
 	}
 
-	@JSONProperty
+	@JSONProperty(name = "プラネツ")
 	public String getPlanet() {
 		return planet;
 	}
 
-	@JSONProperty
+	@JSONProperty()
 	public int getAge() {
 		return age;
 	}

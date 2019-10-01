@@ -41,7 +41,10 @@ public class Main {
 	private static String methodToFieldDeuxPointsValue(Method m,
 		Object that, Object[] args) {
 
-		var propName = propertyName(m.getName());
+		var anno = m.getAnnotation(JSONProperty.class);
+		var propName = anno.name().isEmpty() ?
+				propertyName(m.getName()) : anno.name(); 
+
 		var propValue = callGetter(m, that);
 
 		return propName + " : " + propValue.toString();

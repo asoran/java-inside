@@ -43,12 +43,12 @@ class MainTest {
 			this.lastName = Objects.requireNonNull(lastName);
 		}
 
-		@JSONProperty
+		@JSONProperty(name = "prenom")
 		public String getFirstName() {
 			return firstName;
 		}
 
-		@JSONProperty
+		@JSONProperty(name = "nom")
 		public String getLastName() {
 			return lastName;
 		}
@@ -59,8 +59,8 @@ class MainTest {
 	public void testToJSONWithPerson() {
 		var p = new Person("Altan", "Le bg");
 		assertEquals("{\n" + 
-				"	firstName : Altan,\n" + 
-				"	lastName : Le bg\n" +  
+				"	prenom : Altan,\n" + 
+				"	nom : Le bg\n" +  
 				"}", Main.toJSON(p));
 	}
 
