@@ -1,15 +1,17 @@
 language: java
 jdk: openjdk13
 
-# matrix:
-#   include:
-#   - name: "OSX testing"
-#     os: osx
-#   - name: "Linux testing"
-#     os: linux
-os:
-  - linux
+matrix:
+  include:
+  - name: "OSX testing"
+    os: osx
+  - name: "Linux testing"
+    os: linux
+
+# os:
+#   - linux
+#   - osx
 
 script:
-  - cd lab1
-  - mvn package
+  - cd lab1 && mvn package
+  - cd lab2 && mvn package
