@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Comparator;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,14 +52,9 @@ public class Main {
 		var clazz = o.getClass();
 		var methods = Stream.of(clazz.getMethods());
 
-//		var nameValueMap = methods
-//			.map(m -> m.getName())
-//			.filter(Main::isGeter)
-//			.map(Main::propertyName)
-//			.collect(joining(", ", "{", "}"));
-
 		var nameValueMap = methods
 			.filter(m -> isGeter(m.getName()))
+			.filter(m -> m.isAnnotationPresent(JSONProperty.class))
 			.sorted(Comparator.comparing(Method::getName))
 			.map(m -> methodToFieldDeuxPointsValue(m, o, new Object[0]))
 			.collect(joining(",\n\t", "{\n\t", "\n}"))

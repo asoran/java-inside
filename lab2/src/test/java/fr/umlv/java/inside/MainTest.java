@@ -21,11 +21,13 @@ class MainTest {
 			this.planet = Objects.requireNonNull(planet);
 			this.age = age;
 		}
-	
+
+		@JSONProperty
 		public String getPlanet() {
 			return planet;
 		}
-	
+
+		@JSONProperty
 		public int getAge() {
 			return age;
 		}
@@ -41,10 +43,12 @@ class MainTest {
 			this.lastName = Objects.requireNonNull(lastName);
 		}
 
+		@JSONProperty
 		public String getFirstName() {
 			return firstName;
 		}
 
+		@JSONProperty
 		public String getLastName() {
 			return lastName;
 		}
@@ -55,7 +59,6 @@ class MainTest {
 	public void testToJSONWithPerson() {
 		var p = new Person("Altan", "Le bg");
 		assertEquals("{\n" + 
-				"	class : class fr.umlv.java.inside.MainTest$Person,\n" +
 				"	firstName : Altan,\n" + 
 				"	lastName : Le bg\n" +  
 				"}", Main.toJSON(p));
@@ -67,7 +70,6 @@ class MainTest {
 		var p = new Alien("Jupiter", 5);
 		assertEquals("{\n" +
 				"	age : 5,\n" + 
-				"	class : class fr.umlv.java.inside.MainTest$Alien,\n" +
 				"	planet : Jupiter\n" + 
 				"}", Main.toJSON(p));
 	}
