@@ -14,4 +14,4 @@ matrix:
 
 script:
   - cd lab1 && mvn package
-  - cd lab2 && mvn package
+  - cd .. && cd lab2 && mvn package
