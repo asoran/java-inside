@@ -1,0 +1,95 @@
+Altan SORAN
+Compte rendu des questions du TP2
+https://github.com/asoran/java-inside
+
+TP2: Reflection, Annotation, JSON
+
+Exercice 1 - Reflection et Annotation
+
+1 et 2) Fait.
+
+3)
+On récupère les méthodes avec Class.getMethods() puis on
+filtre les getter en regardant si le nom de la méthode
+commence bien par 'get' et on applique propertyName()
+sur les noms des méthodes.
+
+4) Fait.
+
+5) Ici on fait bien attention à faire passer les exceptions
+runtime et gérer les exceptions normales avec:
+try {
+	return m.invoke(that);
+
+	} catch (IllegalAccessException e) {
+		throw new IllegalStateException(e);
+	} catch (InvocationTargetException e) {
+		var cause = e.getCause();
+		if(cause instanceof RuntimeException)
+			throw (RuntimeException) cause;
+		else if(cause instanceof Error)
+			throw (Error) cause;
+		throw new UndeclaredThrowableException(cause);
+	}
+}
+
+6) Tests écris.
+
+7)
+os:
+  - linux
+  - osx
+env:
+  matrix:
+    - TARGET: "lab1"
+    - TARGET: "lab2"
+script:
+  - cd $TARGET && mvn package
+
+8)
+On crée l'annotation comme ça:
+```
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface JSONProperty { }
+```
+Puis dans dans la fonction toJSON on filtre les méthodes pour
+sélectionner celle qui sont annotés par JSONProperty.
+`isAnnotationPresent(JSONProperty.class)
+
+9)
+On ajoute un champ dans l'annotation et on ajoute le contrôle
+de ce champ dans le code du Main.
+
+10)
+L'appelle est lent pour 2 raisons:
+- On nous renvoie un array, dans il faut faire une copy de chaque élément.
+- La classe Method est mutable, il faut cloner les objets.
+
+11)
+On va mettre en cache le retour de getMethods() pour régler les problèmes
+de lenteur:
+```
+private final static ClassValue<Method[]> cache = new ClassValue<Method[]>() {
+	@Override
+	protected Method[] computeValue(Class<?> type) {
+		// System.out.println("Test :)");
+		return type.getMethods();
+	}
+};
+```
+Avec des tests, j'observe en moyenne pour 1_000_000 d'appele à la fonction:
+- 0.901 sec AVEC cache
+- 1.374 sec SANS cache
+
+C'est beaucoup plus rapide!
+
+12)
+Pareille que la 11, sauf que on cache le nom des méthodes.
+Je stock le nom des méthodes dans une Map<Method, String>, et je retourne
+une lambda qui associe a une Method un String (appelle à la map crée au premier
+appel de la fonction).
+Je gagne quelque (centaines) milliseconds.
+
+
+

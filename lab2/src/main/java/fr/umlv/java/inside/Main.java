@@ -3,22 +3,36 @@ package fr.umlv.java.inside;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Comparator;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class Main {
 
-	private final static ClassValue<Method[]> cache = new ClassValue<Method[]>() {
+	private final static ClassValue<Method[]> cachedMethods = new ClassValue<Method[]>() {
 		@Override
 		protected Method[] computeValue(Class<?> type) {
 			// System.out.println("Test :)");
 			return type.getMethods();
+		}
+	};
+
+	private final static ClassValue<Function<Method, String>> cachedMethodsName = new ClassValue<Function<Method, String>>() {
+		@Override
+		protected Function<Method, String> computeValue(Class<?> type) {
+			// System.out.println("Test :)");
+			var methodNames = Stream.of(type.getMethods())
+				.filter(m -> isGeter(m.getName()))
+				.filter(m -> m.isAnnotationPresent(JSONProperty.class))
+				.collect(toMap(
+					m -> m,
+					m -> getMethodeJsonName(m))
+				);
+
+			return method -> methodNames.get(method);
 		}
 	};
 
@@ -46,12 +60,16 @@ public class Main {
 		}
 	}
 
-	private static String methodToFieldDeuxPointsValue(Method m,
-		Object that, Object[] args) {
-
+	private static String getMethodeJsonName(Method m) {
 		var anno = m.getAnnotation(JSONProperty.class);
-		var propName = anno.name().isEmpty() ?
+		return anno.name().isEmpty() ?
 				propertyName(m.getName()) : anno.name(); 
+	}
+
+	private static String methodToFieldDeuxPointsValue(Class clazz, Method m,
+		Object that) {
+
+		var propName = cachedMethodsName.get(clazz).apply(m);
 
 		var propValue = callGetter(m, that);
 
@@ -60,13 +78,13 @@ public class Main {
 
 	public static String toJSON(Object o) {
 		var clazz = o.getClass();
-		var methods = Stream.of(cache.get(clazz));
+		var methods = Stream.of(cachedMethods.get(clazz));
 
 		var nameValueMap = methods
 			.filter(m -> isGeter(m.getName()))
 			.filter(m -> m.isAnnotationPresent(JSONProperty.class))
 			.sorted(Comparator.comparing(Method::getName))
-			.map(m -> methodToFieldDeuxPointsValue(m, o, new Object[0]))
+			.map(m -> methodToFieldDeuxPointsValue(clazz, m, o))
 			.collect(joining(",\n\t", "{\n\t", "\n}"))
 			;
 
