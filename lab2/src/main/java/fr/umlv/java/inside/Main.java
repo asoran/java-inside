@@ -14,6 +14,14 @@ import java.util.stream.Stream;
 
 public class Main {
 
+	private final static ClassValue<Method[]> cache = new ClassValue<Method[]>() {
+		@Override
+		protected Method[] computeValue(Class<?> type) {
+			// System.out.println("Test :)");
+			return type.getMethods();
+		}
+	};
+
 	private static String propertyName(String name) {
 		return Character.toLowerCase(name.charAt(3)) + name.substring(4);
 	}
@@ -52,7 +60,7 @@ public class Main {
 
 	public static String toJSON(Object o) {
 		var clazz = o.getClass();
-		var methods = Stream.of(clazz.getMethods());
+		var methods = Stream.of(cache.get(clazz));
 
 		var nameValueMap = methods
 			.filter(m -> isGeter(m.getName()))
@@ -63,11 +71,6 @@ public class Main {
 			;
 
 		return nameValueMap;
-	}
-
-	public static void main(String[] args) {
-		var p = new Alien("Jupiter", 5);
-		System.out.println(toJSON(p));
 	}
 
 }
