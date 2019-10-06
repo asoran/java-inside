@@ -51,7 +51,6 @@ public class Main {
 	}
 
 	public static String toJSON(Object o) {
-
 		var clazz = o.getClass();
 		var methods = Stream.of(clazz.getMethods());
 
@@ -62,7 +61,6 @@ public class Main {
 			.map(m -> methodToFieldDeuxPointsValue(m, o, new Object[0]))
 			.collect(joining(",\n\t", "{\n\t", "\n}"))
 			;
-
 
 		return nameValueMap;
 	}

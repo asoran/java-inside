@@ -54,6 +54,12 @@ class MainTest {
 		}
 	}
 
+	@Test()
+	@Tag("toJSON_Empty")
+	public void testToJSONWithEmptyObject() {
+		assertEquals("{\n\t\n}", Main.toJSON(new Object()));
+	}
+	
 	@Test
 	@Tag("toJSON_Person")
 	public void testToJSONWithPerson() {
