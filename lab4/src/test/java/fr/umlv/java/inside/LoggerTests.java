@@ -22,18 +22,8 @@ public class LoggerTests {
 	}
 
 	private static class LoggerClass {
-		private final static StringBuilder SB;
-		private final static Logger LOGGER;
-
-		static {
-			try {
-				SB = new StringBuilder();
-				LOGGER = Logger.of(LoggerClass.class, SB::append);
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw e;
-			}
-		}
+		private final static StringBuilder SB = new StringBuilder();
+		private final static Logger LOGGER = Logger.of(LoggerClass.class, SB::append);
 	}
 
 	@Test
