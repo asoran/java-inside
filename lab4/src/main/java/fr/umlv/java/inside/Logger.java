@@ -1,6 +1,11 @@
 package fr.umlv.java.inside;
 
+import static java.lang.invoke.MethodHandles.insertArguments;
+import static java.lang.invoke.MethodType.methodType;
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Consumer;
 
@@ -12,6 +17,8 @@ public interface Logger {
 		return new Logger() {
 			@Override
 			public void log(String message) {
+				requireNonNull(message);
+
 				try {
 					mh.invokeExact(message);
 				} catch (Throwable t) {
@@ -28,7 +35,22 @@ public interface Logger {
 	}
 
 	private static MethodHandle createLoggingMethodHandle(Class<?> declaringClass, Consumer<? super String> consumer) {
-		// TODO
-		return null;
+		requireNonNull(declaringClass);
+		requireNonNull(consumer);
+
+		var l = MethodHandles.lookup();
+		MethodHandle mh = null;
+
+		try {
+			mh = l.findVirtual(Consumer.class, "accept",
+				methodType(void.class, Object.class));
+		} catch (NoSuchMethodException | IllegalAccessException e) {
+			throw new AssertionError(e);
+		}
+
+		mh = insertArguments(mh, 0, consumer)
+			.asType(methodType(void.class, String.class));
+
+		return mh;
 	}
 }

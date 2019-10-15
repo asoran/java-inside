@@ -12,7 +12,7 @@ public class LoggerTests {
 	@Test
 	@Tag("Question2")
 	public void LoggerRequireNotNullClass() {
-		assertThrows(NullPointerException.class, () -> Logger.of(null, System.err::println));
+		assertThrows(NullPointerException.class, () -> Logger.of(null, __ -> {}));
 	}
 
 	@Test
@@ -22,16 +22,30 @@ public class LoggerTests {
 	}
 
 	private static class LoggerClass {
-		private final static StringBuilder sb = new StringBuilder();
-		private final static Logger logger = Logger.of(LoggerTests.class, sb::append);
+		private final static StringBuilder SB;
+		private final static Logger LOGGER;
+
+		static {
+			try {
+				SB = new StringBuilder();
+				LOGGER = Logger.of(LoggerClass.class, SB::append);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+		}
 	}
 
 	@Test
 	@Tag("Question2")
 	public void LoggerLogsGoodLol() {
-		LoggerClass.logger.log("Salut");
-		assertEquals("Salut", LoggerClass.sb.toString());
+		LoggerClass.LOGGER.log("Salut");
+		assertEquals("Salut", LoggerClass.SB.toString());
 	}
 
-
+	@Test
+	@Tag("Question2")
+	public void LoggerDontLogNull() {
+		assertThrows(NullPointerException.class, () -> LoggerClass.LOGGER.log(null));
+	}
 }
