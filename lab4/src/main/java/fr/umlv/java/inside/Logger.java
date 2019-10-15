@@ -12,6 +12,26 @@ import java.util.function.Consumer;
 public interface Logger {
 	public void log(String message);
 
+	public static Logger fastOf(Class<?> declaringClass, Consumer<? super String> consumer) {
+		var mh = createLoggingMethodHandle(declaringClass, consumer);
+
+		return (message) -> {
+
+			requireNonNull(message);
+			try {
+				mh.invokeExact(message);
+			} catch (Throwable t) {
+				if (t instanceof RuntimeException) {
+					throw (RuntimeException) t;
+				}
+				if (t instanceof Error) {
+					throw (Error) t;
+				}
+				throw new UndeclaredThrowableException(t);
+			}
+		};
+	}
+	
 	public static Logger of(Class<?> declaringClass, Consumer<? super String> consumer) {
 		var mh = createLoggingMethodHandle(declaringClass, consumer);
 		return new Logger() {
