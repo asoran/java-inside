@@ -6,13 +6,27 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MutableCallSite;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Consumer;
 
 public interface Logger {
 	public void log(String message);
 
+	static final ClassValue<MutableCallSite> ENABLE_CALLSITES = new ClassValue<>() {
+		protected MutableCallSite computeValue(Class<?> type) {
+			return new MutableCallSite(MethodHandles.constant(boolean.class, true));
+		}
+	};
+
+	public static void enable(Class<?> declaringClass, boolean enable) {
+		ENABLE_CALLSITES.get(declaringClass).setTarget(MethodHandles.constant(boolean.class, enable));
+	}
+
 	public static Logger fastOf(Class<?> declaringClass, Consumer<? super String> consumer) {
+		requireNonNull(declaringClass);
+		requireNonNull(consumer);
+
 		var mh = createLoggingMethodHandle(declaringClass, consumer);
 
 		return (message) -> {
@@ -31,8 +45,11 @@ public interface Logger {
 			}
 		};
 	}
-	
+
 	public static Logger of(Class<?> declaringClass, Consumer<? super String> consumer) {
+		requireNonNull(declaringClass);
+		requireNonNull(consumer);
+
 		var mh = createLoggingMethodHandle(declaringClass, consumer);
 		return new Logger() {
 			@Override
@@ -55,22 +72,20 @@ public interface Logger {
 	}
 
 	private static MethodHandle createLoggingMethodHandle(Class<?> declaringClass, Consumer<? super String> consumer) {
-		requireNonNull(declaringClass);
-		requireNonNull(consumer);
-
 		var l = MethodHandles.lookup();
 		MethodHandle mh = null;
-
+		
 		try {
-			mh = l.findVirtual(Consumer.class, "accept",
-				methodType(void.class, Object.class));
+			mh = l.findVirtual(Consumer.class, "accept", methodType(void.class, Object.class));
 		} catch (NoSuchMethodException | IllegalAccessException e) {
 			throw new AssertionError(e);
 		}
 
-		mh = insertArguments(mh, 0, consumer)
-			.asType(methodType(void.class, String.class));
+		mh = insertArguments(mh, 0, consumer).asType(methodType(void.class, String.class));
 
-		return mh;
+		return MethodHandles.guardWithTest(
+				ENABLE_CALLSITES.get(declaringClass)::dynamicInvoker,
+				mh,
+				MethodHandles.empty(methodType(void.class, String.class)));
 	}
 }

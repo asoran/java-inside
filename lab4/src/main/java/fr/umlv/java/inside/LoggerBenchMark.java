@@ -16,7 +16,6 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(3)
@@ -25,7 +24,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @State(Scope.Benchmark)
 public class LoggerBenchMark {
 	private static class LoggerClass {
-		private final static Logger LOGGER = Logger.of(LoggerClass.class, __ -> {});
+		private final static Logger LOGGER = Logger.fastOf(LoggerClass.class, __ -> {});
 	}
 
 	@Benchmark
@@ -35,6 +34,6 @@ public class LoggerBenchMark {
 
 	@Benchmark
 	public void simple_logger() {
-		LoggerClass.LOGGER.log("Salut les bros c'est LRB");
+		LoggerClass.LOGGER.log("");
 	}
 }

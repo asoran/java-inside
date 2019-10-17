@@ -14,7 +14,6 @@
 		<jmh.version>1.21</jmh.version>
 	</properties>
 
-
 	<dependencies>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -51,7 +50,6 @@
 				<version>3.8.0</version>
 				<configuration>
 					<release>13</release>
-					<compilerArgs>--enable-preview</compilerArgs>
 				</configuration>
 			</plugin>
 
@@ -60,10 +58,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M3</version>
 				<configuration>
-					<argLine>--enable-preview</argLine>
 				</configuration>
 			</plugin>
-
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -3,12 +3,11 @@ package fr.umlv.java.inside;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 public class LoggerTests {
-	
+
 	@Test
 	@Tag("Question2")
 	public void LoggerRequireNotNullClass() {
