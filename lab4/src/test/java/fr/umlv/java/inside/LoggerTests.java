@@ -39,19 +39,47 @@ public class LoggerTests {
 		assertThrows(NullPointerException.class, () -> LoggerClass.LOGGER.log(null));
 	}
 
+	private static class AnotherLogger {
+
+		private final static StringBuilder SB = new StringBuilder();
+		private final static Logger LOGGER = Logger.fastOf(AnotherLogger.class, SB::append);
+	}
+	
 	private static class DisabledLogger {
 		static {
 			Logger.enable(DisabledLogger.class, false);
 		}
 
 		private final static StringBuilder SB = new StringBuilder();
-		private final static Logger LOGGER = Logger.fastOf(LoggerClass.class, SB::append);
+		private final static Logger LOGGER = Logger.fastOf(DisabledLogger.class, SB::append);
 	}
 
 	@Test
-	public void disabled_logger() {
-		DisabledLogger.LOGGER.log("");
+	@Tag("Question10")
+	public void disable_logger_then_log() throws InterruptedException {
+
+		Thread t2 = new Thread(() -> {
+			AnotherLogger.LOGGER.log("SALUT");
+		});
+
+		Thread t1 = new Thread(() -> {
+			t2.start();
+			Logger.enable(AnotherLogger.class, false);
+		});
+
+		t1.start();
+
+		t1.join();
+		t2.join();
+
+		assertTrue(AnotherLogger.SB.toString().isEmpty());
+	}
+
+	@Test
+	@Tag("Question10")
+	public void disabled_logger_should_not_log() {
+		DisabledLogger.LOGGER.log("C'est la mer noir");
 		assertTrue(DisabledLogger.SB.toString().isEmpty());
 	}
-	
+
 }

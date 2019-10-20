@@ -10,6 +10,17 @@ import java.lang.invoke.MutableCallSite;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Consumer;
 
+/**
+
+Doc de 'getTarget':
+In particular, the current thread may choose to reuse the result of a previous read of
+the target from memory, and may fail to see a recent update to the target by another thread.
+
+syncAll
+
+**/
+
+
 public interface Logger {
 	public void log(String message);
 
@@ -20,7 +31,10 @@ public interface Logger {
 	};
 
 	public static void enable(Class<?> declaringClass, boolean enable) {
-		ENABLE_CALLSITES.get(declaringClass).setTarget(MethodHandles.constant(boolean.class, enable));
+		var site = ENABLE_CALLSITES.get(declaringClass);
+		site.setTarget(MethodHandles.constant(boolean.class, enable));
+
+		MutableCallSite.syncAll(new MutableCallSite[] {site});
 	}
 
 	public static Logger fastOf(Class<?> declaringClass, Consumer<? super String> consumer) {
@@ -32,6 +46,7 @@ public interface Logger {
 		return (message) -> {
 
 			requireNonNull(message);
+
 			try {
 				mh.invokeExact(message);
 			} catch (Throwable t) {
@@ -55,7 +70,7 @@ public interface Logger {
 			@Override
 			public void log(String message) {
 				requireNonNull(message);
-
+				
 				try {
 					mh.invokeExact(message);
 				} catch (Throwable t) {
