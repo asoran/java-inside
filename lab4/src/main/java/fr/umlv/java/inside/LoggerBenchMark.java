@@ -27,12 +27,20 @@ public class LoggerBenchMark {
 		private final static Logger LOGGER = Logger.fastOf(LoggerClass.class, __ -> {});
 	}
 
-	private static class DisabledLogger {
+	private static class DisabledPrintLogger {
 		static {
-			Logger.enable(DisabledLogger.class, false);
+			Logger.enable(DisabledPrintLogger.class, false);
 		}
 
-		private final static Logger LOGGER = Logger.fastOf(DisabledLogger.class, System.out::println);
+		private final static Logger LOGGER = Logger.fastOf(DisabledPrintLogger.class, System.out::println);
+	}
+	
+	private static class DisabledEmptyLogger {
+		static {
+			Logger.enable(DisabledEmptyLogger.class, false);
+		}
+
+		private final static Logger LOGGER = Logger.fastOf(DisabledEmptyLogger.class, __ -> {});
 	}
 
 	@Benchmark
@@ -46,9 +54,12 @@ public class LoggerBenchMark {
 	}
 
 	@Benchmark
-	public void disabled_logger() {
-		System.out.println("AVANT");
-		DisabledLogger.LOGGER.log("");
-		System.out.println("APRES");
+	public void disabled_print_logger() {
+		DisabledPrintLogger.LOGGER.log("");
+	}
+
+	@Benchmark
+	public void disabled_empty_logger() {
+		DisabledEmptyLogger.LOGGER.log("");
 	}
 }
