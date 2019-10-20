@@ -84,8 +84,9 @@ public interface Logger {
 		mh = insertArguments(mh, 0, consumer).asType(methodType(void.class, String.class));
 
 		return MethodHandles.guardWithTest(
-				ENABLE_CALLSITES.get(declaringClass).dynamicInvoker(),
-				mh,
-				MethodHandles.empty(methodType(void.class, String.class)));
+			ENABLE_CALLSITES.get(declaringClass).getTarget(),
+			mh,
+			MethodHandles.empty(methodType(void.class, String.class))
+		);
 	}
 }

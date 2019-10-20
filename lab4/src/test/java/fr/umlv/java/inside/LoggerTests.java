@@ -2,6 +2,7 @@ package fr.umlv.java.inside;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -37,4 +38,20 @@ public class LoggerTests {
 	public void LoggerDontLogNull() {
 		assertThrows(NullPointerException.class, () -> LoggerClass.LOGGER.log(null));
 	}
+
+	private static class DisabledLogger {
+		static {
+			Logger.enable(DisabledLogger.class, false);
+		}
+
+		private final static StringBuilder SB = new StringBuilder();
+		private final static Logger LOGGER = Logger.fastOf(LoggerClass.class, SB::append);
+	}
+
+	@Test
+	public void disabled_logger() {
+		DisabledLogger.LOGGER.log("");
+		assertTrue(DisabledLogger.SB.toString().isEmpty());
+	}
+	
 }
