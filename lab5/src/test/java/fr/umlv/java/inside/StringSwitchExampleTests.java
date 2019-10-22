@@ -31,8 +31,8 @@ public class StringSwitchExampleTests {
 
 	public static Stream<ToIntFunction<String>> SASAGEYO_SASAGEYO() {
 		return Stream.of(
-			StringSwitchExample::stringSwitch
-			//,StringSwitchExample::stringSwitch2
+			StringSwitchExample::stringSwitch,
+			StringSwitchExample::stringSwitch2
 		);
 	}
 
