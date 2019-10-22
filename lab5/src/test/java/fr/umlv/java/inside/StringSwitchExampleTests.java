@@ -23,9 +23,11 @@ public class StringSwitchExampleTests {
 			() -> assertEquals(0, m.applyAsInt("foo")),
 			() -> assertEquals(1, m.applyAsInt("bar")),
 			() -> assertEquals(2, m.applyAsInt("bazz")),
-			() -> assertEquals(-1, m.applyAsInt("other"))
+			() -> assertEquals(-1, m.applyAsInt("other")),
+			() -> assertThrows(NullPointerException.class,
+				() -> StringSwitchExample.stringSwitch(null))
 		);
-	}	
+	}
 
 	public static Stream<ToIntFunction<String>> SASAGEYO_SASAGEYO() {
 		return Stream.of(
@@ -34,12 +36,4 @@ public class StringSwitchExampleTests {
 		);
 	}
 
-	@Test
-	@Tag("Question3")
-	public void stringSwitchThrowsNPEWhenNullGiven() {
-		assertThrows(NullPointerException.class,
-			() -> StringSwitchExample.stringSwitch(null));
-	}
-
-	
 }
