@@ -5,19 +5,32 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class StringSwitchExampleTests {
 
-	@Test
+	@ParameterizedTest
+	@MethodSource("SASAGEYO_SASAGEYO")
 	@Tag("Question3")
-	public void stringSwitchWorksCorrectly() {
+	public void stringSwitchWorksCorrectly(ToIntFunction<String> m) {
 		assertAll(
-			() -> assertEquals(0, StringSwitchExample.stringSwitch("foo")),
-			() -> assertEquals(1, StringSwitchExample.stringSwitch("bar")),
-			() -> assertEquals(2, StringSwitchExample.stringSwitch("bazz")),
-			() -> assertEquals(-1, StringSwitchExample.stringSwitch("other"))
+			() -> assertEquals(0, m.applyAsInt("foo")),
+			() -> assertEquals(1, m.applyAsInt("bar")),
+			() -> assertEquals(2, m.applyAsInt("bazz")),
+			() -> assertEquals(-1, m.applyAsInt("other"))
+		);
+	}	
+
+	public static Stream<ToIntFunction<String>> SASAGEYO_SASAGEYO() {
+		return Stream.of(
+			StringSwitchExample::stringSwitch
+			//,StringSwitchExample::stringSwitch2
 		);
 	}
 

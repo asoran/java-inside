@@ -16,6 +16,9 @@ env:
   matrix:
     - TARGET: "lab1"
     - TARGET: "lab2"
+    - TARGET: "lab3"
+    - TARGET: "lab4"
+    - TARGET: "lab5"
 
 script:
   - cd $TARGET && mvn package
