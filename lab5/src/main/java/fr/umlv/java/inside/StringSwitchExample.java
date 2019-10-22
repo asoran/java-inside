@@ -2,6 +2,7 @@ package fr.umlv.java.inside;
 
 import static java.lang.invoke.MethodHandles.constant;
 import static java.lang.invoke.MethodHandles.dropArguments;
+import static java.lang.invoke.MethodHandles.guardWithTest;
 import static java.lang.invoke.MethodHandles.insertArguments;
 import static java.lang.invoke.MethodType.methodType;
 
@@ -24,7 +25,7 @@ public class StringSwitchExample {
 					methodType(boolean.class, Object.class));
 
 		} catch (NoSuchMethodException | IllegalAccessException e) {
-			throw new AssertionError();
+			throw new AssertionError(e);
 		}
 	}
 
@@ -75,7 +76,58 @@ public class StringSwitchExample {
 	}
 
 	/* **************************************************** */
-	
 
+	public static int stringSwitch3(String string) {
+		try {
+			var mh = createMHFromStrings3("foo", "bar", "bazz");
+			return (int) mh.invokeExact(string);
+
+		} catch (RuntimeException | Error e) {
+			throw e;
+		} catch (Throwable t) {
+			throw new UndeclaredThrowableException(t);
+		}
+	}
+
+	public static MethodHandle createMHFromStrings3(String... matches) {
+		return new InliningCache(matches).dynamicInvoker();
+	}
+
+	static class InliningCache extends MutableCallSite {
+		private static final MethodHandle SLOW_PATH;
+
+		static {
+			try {
+				SLOW_PATH = MethodHandles.lookup()
+				  .findVirtual(InliningCache.class, "slowPath",
+					methodType(int.class, String.class));
+			} catch (NoSuchMethodException | IllegalAccessException e) {
+				throw new AssertionError(e);
+			}
+	    }
+
+		private final List<String> matches;
+
+		public InliningCache(String... matches) {
+			super(methodType(int.class, String.class));
+			this.matches = List.of(matches);
+			setTarget(insertArguments(SLOW_PATH, 0, this));
+		}
+
+		@SuppressWarnings("unused")
+		private int slowPath(String value) {
+			var index = matches.indexOf(value);
+
+			var mh = guardWithTest(
+				insertArguments(STRING_EQUALS, 1, value),
+				dropArguments(constant(int.class, index), 0, String.class),
+				getTarget());
+
+			setTarget(mh);
+
+			return index;
+
+		}
+	}
 
 }
