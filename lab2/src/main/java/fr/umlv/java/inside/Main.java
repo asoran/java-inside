@@ -66,7 +66,7 @@ public class Main {
 				propertyName(m.getName()) : anno.name(); 
 	}
 
-	private static String methodToFieldDeuxPointsValue(Class clazz, Method m,
+	private static String methodToFieldDeuxPointsValue(Class<?> clazz, Method m,
 		Object that) {
 
 		var propName = cachedMethodsName.get(clazz).apply(m);
