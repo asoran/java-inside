@@ -57,17 +57,19 @@ public class LoggerTests {
 	@Test
 	@Tag("Question10")
 	public void disable_logger_then_log() throws InterruptedException {
+		// This can fail ...
 
 		Thread t2 = new Thread(() -> {
 			AnotherLogger.LOGGER.log("SALUT");
 		});
 
 		Thread t1 = new Thread(() -> {
-			t2.start();
 			Logger.enable(AnotherLogger.class, false);
 		});
 
 		t1.start();
+		Thread.sleep(1_000);
+		t2.start();
 
 		t1.join();
 		t2.join();
