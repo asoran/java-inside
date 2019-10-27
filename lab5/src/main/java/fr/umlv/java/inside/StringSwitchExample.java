@@ -46,10 +46,6 @@ public class StringSwitchExample {
 		}
 	}
 
-	private static MethodHandle createMHFromStrings(String... string) {
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
 	/* **************************************************** */
 
 	public static int stringSwitch2(String string) {
@@ -114,7 +110,7 @@ public class StringSwitchExample {
 			setTarget(insertArguments(SLOW_PATH, 0, this));
 		}
 
-		@SuppressWarnings("unused")
+		@SuppressWarnings("unused") // accessed by reflexion
 		private int slowPath(String value) {
 			var index = matches.indexOf(value);
 
