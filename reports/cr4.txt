@@ -1,0 +1,3 @@
+StringSwitchBenchMark.stringSwitch_1  avgt         0,007           s/op
+StringSwitchBenchMark.stringSwitch_2  avgt         9,092           s/op
+StringSwitchBenchMark.stringSwitch_3  avgt       112,421           s/op
