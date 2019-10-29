@@ -85,6 +85,18 @@ public class StringSwitchExample {
 		}
 	}
 
+	private static final MethodHandle MH3 = createMHFromStrings3("foo", "bar", "bazz");
+	public static int stringSwitch3_fast_constant(String string) {
+		try {
+			return (int) MH3.invokeExact(string);
+
+		} catch (RuntimeException | Error e) {
+			throw e;
+		} catch (Throwable t) {
+			throw new UndeclaredThrowableException(t);
+		}
+	}
+
 	public static MethodHandle createMHFromStrings3(String... matches) {
 		return new InliningCache(matches).dynamicInvoker();
 	}
@@ -105,8 +117,12 @@ public class StringSwitchExample {
 		private final List<String> matches;
 
 		public InliningCache(String... matches) {
+			this(List.of(matches));
+		}
+
+		public InliningCache(List<String> matches) {
 			super(methodType(int.class, String.class));
-			this.matches = List.of(matches);
+			this.matches = matches;
 			setTarget(insertArguments(SLOW_PATH, 0, this));
 		}
 
@@ -117,7 +133,7 @@ public class StringSwitchExample {
 			var mh = guardWithTest(
 				insertArguments(STRING_EQUALS, 1, value),
 				dropArguments(constant(int.class, index), 0, String.class),
-				getTarget());
+				new InliningCache(matches).dynamicInvoker());
 
 			setTarget(mh);
 
