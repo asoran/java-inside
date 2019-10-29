@@ -36,10 +36,10 @@ public class Example1 {
 
 		var deck = new ArrayDeque<>(list);
 		while(!deck.isEmpty()) {
-			var e = deck.pollFirst();
+			var e = deck.poll();
 			e.run();
 			if(!e.isDone())
-				deck.addLast(e);
+				deck.offer(e);
 		}
 
 	}
