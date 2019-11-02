@@ -6,6 +6,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public interface Scheduler {
 
+	/**
+	 * FILO, First in last out
+	 */
 	public static Scheduler STACK() {
 		return new Scheduler() {
 			private final ArrayDeque<Continuation> list
@@ -28,6 +31,9 @@ public interface Scheduler {
 		};
 	}
 
+	/**
+	 * FIFO, First in last out
+	 */
 	public static Scheduler FIFO() {
 		return new Scheduler() {
 			private final ArrayDeque<Continuation> list
@@ -79,7 +85,7 @@ public interface Scheduler {
 
 	default public void enqueue(ContinuationScope scope) {
 		var cont = Continuation.getCurrentContinuation(scope);
-		if(cont == null)		
+		if(cont == null)
 			throw new IllegalStateException();
 
 		addElement(cont);
