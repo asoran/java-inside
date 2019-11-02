@@ -1,54 +1,94 @@
 package fr.umlv.java.inside;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Scheduler {
-	private final ArrayDeque<Continuation> deque;
-	private final POLITIC pol;
+public interface Scheduler {
 
-	public enum POLITIC {
-		STACK, FIFO, RANDOM
+	public static Scheduler STACK() {
+		return new Scheduler() {
+			private final ArrayDeque<Continuation> list
+				= new ArrayDeque<>();
+
+			@Override
+			public boolean isEmpty() {
+				return list.isEmpty();
+			}
+
+			@Override
+			public Continuation getNext() {
+				return list.pollLast();
+			}
+
+			@Override
+			public void addElement(Continuation cont) {
+				list.offer(cont);
+			}
+		};
 	}
 
-	public Scheduler(Scheduler.POLITIC pol) {
-		this.deque = new ArrayDeque<>();
-		this.pol = pol;
+	public static Scheduler FIFO() {
+		return new Scheduler() {
+			private final ArrayDeque<Continuation> list
+				= new ArrayDeque<>();
+
+			@Override
+			public boolean isEmpty() {
+				return list.isEmpty();
+			}
+
+			@Override
+			public Continuation getNext() {
+				return list.poll();
+			}
+
+			@Override
+			public void addElement(Continuation cont) {
+				list.offer(cont);
+			}
+		};
 	}
 
-	public void enqueue(ContinuationScope scope) {
+	public static Scheduler RANDOM() {
+		return new Scheduler() {
+			private final ArrayList<Continuation> list
+				= new ArrayList<>();
+
+			@Override
+			public boolean isEmpty() {
+				return list.isEmpty();
+			}
+
+			@Override
+			public Continuation getNext() {
+				int rand = ThreadLocalRandom.current().nextInt(list.size());
+				return list.remove(rand);
+			}
+
+			@Override
+			public void addElement(Continuation cont) {
+				list.add(cont);
+			}
+		};
+	}
+
+	void addElement(Continuation cont);
+	Continuation getNext();
+	boolean isEmpty();
+
+	default public void enqueue(ContinuationScope scope) {
 		var cont = Continuation.getCurrentContinuation(scope);
 		if(cont == null)		
 			throw new IllegalStateException();
 
-		deque.offer(cont);
+		addElement(cont);
 		Continuation.yield(scope);
 	}
 
-	public void runLoop() {
-		while(!deque.isEmpty()) {
-			Continuation cont;
-
-			switch(pol) {
-				case STACK:
-					cont = deque.poll();
-					break;
-				case FIFO:
-					cont = deque.poll();
-					break;
-				case RANDOM:
-
-					var contArray = deque.toArray(new Continuation[]{});
-					var index = ThreadLocalRandom.current()
-							.nextInt(deque.size());
-					cont = contArray[index];
-					deque.remove(cont);
-
-					break;
-				default:
-					throw new IllegalStateException();
-			}
-
+	default public void runLoop() {
+		while(!isEmpty()) {
+			Continuation cont = getNext();
 			cont.run();
 		}
 	}

@@ -4,7 +4,7 @@ public class Example1 {
 
 	public static void main(String[] args) {
 		var scope = new ContinuationScope("Scheduler");
-		Scheduler sc = new Scheduler(Scheduler.POLITIC.RANDOM);
+		Scheduler sc = Scheduler.STACK();
 
 		var contiuation1 = new Continuation(scope, () -> {
 			System.out.println("start 1");
