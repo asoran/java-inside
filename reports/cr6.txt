@@ -1,0 +1,80 @@
+Altan SORAN
+Compte rendu des questions du Lab 6
+https://github.com/asoran/java-inside
+
+Lab 6: Continuation
+
+Exercice 1 - Continuation
+
+1 et 2) Fait.
+
+3)
+var scope = new ContinuationScope("hello1");
+var cont = new Continuation(scope, () -> {
+    System.out.println(Continuation.getCurrentContinuation(scope));
+
+    System.out.println("hello continuation");
+});
+cont.run();
+// On a bien hello dans la console
+
+4)
+Continuation.yield(scope);
+La méthode ne s'exécute plus.
+Si appelle une seconde fois la méthode run sur la continuation dans le main,
+ça marche ça affiche hello continuation !
+
+5)
+Quand on appelle Continuation.yield(), on sort de la Continuation, et quand on
+appelle run, on reprend depuis l'endroit arrêter.
+
+6)
+On a une exception, disant que la Continuation a finit de s'exécuter.
+Oui c'est un comportement normal.
+
+7)
+Voir le .travis.yml
+
+8)
+Continuation.getCurrentContinuation(scope) dans la cont renvoie la continuation actuelle
+et dans le main, elle renvoie null. La méthode main n'est donc pas encapsulé dans une
+Continuation "secrete" comme les threads.
+
+9)
+Faire le Synchronized à cet endroit renvoie un IllegalStateException.
+Une continuation peut être passé par référence, donc peut potentiellementêtre exécuté dans un autre thread que celui dans lequel il a été lancé, et doncl’entrée et la sortie du bloc synchronized peut se faire dans deux threadsdifférents, et on ne veut surtout pas ça !
+
+10)
+var deck = new ArrayDeque<>(list);
+while(!deck.isEmpty()) {
+	var e = deck.pollFirst();
+	e.run();
+	if(!e.isDone())
+		deck.addLast(e);
+}
+
+11)
+Les continuations et les threads se ressemble en certains points. Ils nes’opposent pas, il peuvent cohabiter. On peut par exemple, créer plusieurscontinuation dans un même thread et inversement.Les deux exécutent du code passer sous forme de Runnable, mais il existeplusieurs différences importantes :- Threads: C’est l’OS qui gère complètement le scheduling. Un Threads’exécute sur un thread système, il est parallélisé. Concurrence noncoopérative/compétitive- Continuation: On décide de l'exécution du code. Il s’exécute sur le threadcourant, c’est comme un apelle de fonction, le code qui vient après vas’exécuter après, et pas en même temps !
+
+12, 13 et 14)
+Voir code
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+:)
